@@ -41,11 +41,18 @@ class ViewController: UIViewController {
   @IBOutlet private var iconLabel: UILabel!
   @IBOutlet private var cityNameLabel: UILabel!
 
-  private let disposeBag = DisposeBag()
+  private let bag = DisposeBag()
 
   override func viewDidLoad() {
     super.viewDidLoad()
-    ApiController.shared.currentWeather(for: "São Paulo")
+
+    searchCityName.rx.text.orEmpty
+      .filter { !$0.isEmpty }
+      .flatMap { text in
+        ApiController.shared
+          .currentWeather(for: text)
+          .catchErrorJustReturn(.empty)
+      }
       .observeOn(MainScheduler.instance)
       .subscribe(onNext: { data in
           self.tempLabel.text = "\(data.temperature)° C"
@@ -53,7 +60,7 @@ class ViewController: UIViewController {
           self.humidityLabel.text = "\(data.humidity)%"
           self.cityNameLabel.text = data.cityName
       })
-      .disposed(by: disposeBag)
+      .disposed(by: bag)
 
     style()
   }
