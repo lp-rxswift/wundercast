@@ -41,9 +41,19 @@ class ViewController: UIViewController {
   @IBOutlet private var iconLabel: UILabel!
   @IBOutlet private var cityNameLabel: UILabel!
 
+  private let disposeBag = DisposeBag()
+
   override func viewDidLoad() {
     super.viewDidLoad()
-    // Do any additional setup after loading the view, typically from a nib.
+    ApiController.shared.currentWeather(for: "São Paulo")
+      .observeOn(MainScheduler.instance)
+      .subscribe(onNext: { data in
+          self.tempLabel.text = "\(data.temperature)° C"
+          self.iconLabel.text = data.icon
+          self.humidityLabel.text = "\(data.humidity)%"
+          self.cityNameLabel.text = data.cityName
+      })
+      .disposed(by: disposeBag)
 
     style()
   }
