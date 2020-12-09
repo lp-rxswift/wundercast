@@ -46,30 +46,31 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    let search = searchCityName.rx.text.orEmpty
+    let search = searchCityName.rx
+      .controlEvent(.editingDidEndOnExit)
+      .map { self.searchCityName.text ?? "" }
       .filter { !$0.isEmpty }
       .flatMapLatest { text in
         ApiController.shared
           .currentWeather(for: text)
           .catchErrorJustReturn(.empty)
       }
-      .share(replay: 1)
-      .observeOn(MainScheduler.instance)
+      .asDriver(onErrorJustReturn: .empty)
 
     search.map { "\($0.temperature)° C" }
-      .bind(to: tempLabel.rx.text)
+      .drive(tempLabel.rx.text)
       .disposed(by: bag)
 
     search.map(\.icon)
-      .bind(to: iconLabel.rx.text)
+      .drive(iconLabel.rx.text)
       .disposed(by: bag)
 
     search.map { "\($0.humidity)%" }
-      .bind(to: humidityLabel.rx.text)
+      .drive(humidityLabel.rx.text)
       .disposed(by: bag)
 
     search.map(\.cityName)
-      .bind(to: cityNameLabel.rx.text)
+      .drive(cityNameLabel.rx.text)
       .disposed(by: bag)
 
 
