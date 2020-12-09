@@ -40,14 +40,19 @@ class ViewController: UIViewController {
   @IBOutlet private var humidityLabel: UILabel!
   @IBOutlet private var iconLabel: UILabel!
   @IBOutlet private var cityNameLabel: UILabel!
+  @IBOutlet private var tempSwitch: UISwitch!
 
   private let bag = DisposeBag()
 
   override func viewDidLoad() {
     super.viewDidLoad()
 
-    let search = searchCityName.rx
-      .controlEvent(.editingDidEndOnExit)
+    let temperature = tempSwitch.rx.controlEvent(.valueChanged).asObservable()
+
+    let textSearch = searchCityName.rx.controlEvent(.editingDidEndOnExit).asObservable()
+
+    let search = Observable
+      .merge(textSearch, temperature)
       .map { self.searchCityName.text ?? "" }
       .filter { !$0.isEmpty }
       .flatMapLatest { text in
@@ -57,7 +62,14 @@ class ViewController: UIViewController {
       }
       .asDriver(onErrorJustReturn: .empty)
 
-    search.map { "\($0.temperature)° C" }
+    search
+      .map { w in
+        if self.tempSwitch.isOn {
+          return "\(Int(Double(w.temperature) * 1.8 + 32))° F"
+        } else {
+          return "\(w.temperature)° C"
+        }
+      }
       .drive(tempLabel.rx.text)
       .disposed(by: bag)
 
