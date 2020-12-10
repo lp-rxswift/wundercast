@@ -62,6 +62,17 @@ class ViewController: UIViewController {
       }
       .asDriver(onErrorJustReturn: .empty)
 
+    let running = Observable
+      .merge(search.map { _ in false }.asObservable(),
+             searchInput.map { _ in true })
+      .startWith(true)
+      .asDriver(onErrorJustReturn: false)
+
+    running
+      .skip(1)
+      .drive(activityIndicator.rx.isAnimating)
+      .disposed(by: bag)
+
     search
       .map { w in
         if self.tempSwitch.isOn {
@@ -84,9 +95,6 @@ class ViewController: UIViewController {
     search.map(\.cityName)
       .drive(cityNameLabel.rx.text)
       .disposed(by: bag)
-
-
-    style()
   }
 
   override func viewDidAppear(_ animated: Bool) {
