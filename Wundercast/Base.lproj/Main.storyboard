@@ -62,6 +62,16 @@
                             <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="oCY-gU-SRA">
                                 <rect key="frame" x="169" y="315" width="37" height="37"/>
                             </activityIndicatorView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="D8r-wa-ubg">
+                                <rect key="frame" x="32" y="596" width="44" height="44"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="44" id="PtD-6P-Cl2"/>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="44" id="QG6-Rk-exi"/>
+                                    <constraint firstAttribute="width" constant="44" id="jEQ-Sp-pl2"/>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="44" id="kNb-vj-umU"/>
+                                </constraints>
+                                <state key="normal" image="place-location"/>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
@@ -77,6 +87,7 @@
                             <constraint firstItem="CvG-51-WJq" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="16" id="LuH-bS-Wr5"/>
                             <constraint firstItem="jQQ-9b-2rA" firstAttribute="top" secondItem="aYm-dp-fOW" secondAttribute="bottom" constant="8" id="MFT-Kh-TpX"/>
                             <constraint firstItem="bzg-H5-JfE" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="146" id="PsQ-hf-wGZ"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="D8r-wa-ubg" secondAttribute="bottom" constant="27" id="QNr-dI-Eks"/>
                             <constraint firstItem="fn5-hY-7os" firstAttribute="top" secondItem="jQQ-9b-2rA" secondAttribute="bottom" constant="8" id="Rba-DY-MEe"/>
                             <constraint firstItem="oCY-gU-SRA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="UaZ-Po-XDs"/>
                             <constraint firstItem="jQQ-9b-2rA" firstAttribute="top" secondItem="x4a-i8-beX" secondAttribute="bottom" constant="8" id="VFJ-kt-pMI"/>
@@ -85,11 +96,13 @@
                             <constraint firstAttribute="trailingMargin" secondItem="CvG-51-WJq" secondAttribute="trailing" id="rE1-nx-616"/>
                             <constraint firstItem="jQQ-9b-2rA" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" constant="20" id="ruZ-Hl-zEh"/>
                             <constraint firstItem="aYm-dp-fOW" firstAttribute="trailing" secondItem="jQQ-9b-2rA" secondAttribute="trailing" id="tOM-kL-ZZw"/>
+                            <constraint firstItem="D8r-wa-ubg" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="16" id="wlW-F9-hqh"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="activityIndicator" destination="oCY-gU-SRA" id="gbi-vY-d03"/>
                         <outlet property="cityNameLabel" destination="fn5-hY-7os" id="FJD-r9-Dgm"/>
+                        <outlet property="geoLocationButton" destination="D8r-wa-ubg" id="giF-Jm-i9U"/>
                         <outlet property="humidityLabel" destination="aYm-dp-fOW" id="ACB-jg-cWC"/>
                         <outlet property="iconLabel" destination="jQQ-9b-2rA" id="CFl-ge-t02"/>
                         <outlet property="searchCityName" destination="CvG-51-WJq" id="yXf-Qu-AkM"/>
@@ -102,4 +115,7 @@
             <point key="canvasLocation" x="21.600000000000001" y="36.431784107946029"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="place-location" width="24" height="32"/>
+    </resources>
 </document>
