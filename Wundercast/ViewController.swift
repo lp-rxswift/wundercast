@@ -77,6 +77,19 @@ class ViewController: UIViewController {
       .drive(activityIndicator.rx.isAnimating)
       .disposed(by: bag)
 
+    running
+      .drive(tempLabel.rx.isHidden)
+      .disposed(by: bag)
+    running
+      .drive(iconLabel.rx.isHidden)
+      .disposed(by: bag)
+    running
+      .drive(humidityLabel.rx.isHidden)
+      .disposed(by: bag)
+    running
+      .drive(cityNameLabel.rx.isHidden)
+      .disposed(by: bag)
+
     search
       .map { w in
         if self.tempSwitch.isOn {
