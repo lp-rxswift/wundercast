@@ -41,20 +41,24 @@ class ViewController: UIViewController {
   @IBOutlet private var iconLabel: UILabel!
   @IBOutlet private var cityNameLabel: UILabel!
   @IBOutlet private var tempSwitch: UISwitch!
+  @IBOutlet private var activityIndicator: UIActivityIndicatorView!
 
   private let bag = DisposeBag()
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    style()
+
+    let searchInput = searchCityName.rx
+      .controlEvent(.editingDidEndOnExit)
+      .map { self.searchCityName.text ?? "" }
+      .filter { !$0.isEmpty }
 
     let temperature = tempSwitch.rx.controlEvent(.valueChanged).asObservable()
 
     let textSearch = searchCityName.rx.controlEvent(.editingDidEndOnExit).asObservable()
 
-    let search = Observable
-      .merge(textSearch, temperature)
-      .map { self.searchCityName.text ?? "" }
-      .filter { !$0.isEmpty }
+    let search = searchInput
       .flatMapLatest { text in
         ApiController.shared
           .currentWeather(for: text)
