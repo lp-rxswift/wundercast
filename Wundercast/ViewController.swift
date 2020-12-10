@@ -52,7 +52,13 @@ class ViewController: UIViewController {
     super.viewDidLoad()
     style()
 
-
+    geoLocationButton.rx.tap
+      .subscribe(onNext: { [weak self] _ in
+        guard let self = self else { return }
+        self.locationManager.requestWhenInUseAuthorization()
+        self.locationManager.startUpdatingLocation()
+      })
+      .disposed(by: bag)
 
     let searchInput = searchCityName.rx
       .controlEvent(.editingDidEndOnExit)
