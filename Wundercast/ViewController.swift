@@ -60,6 +60,12 @@ class ViewController: UIViewController {
       })
       .disposed(by: bag)
 
+    locationManager.rx.didUpdateLocations
+      .subscribe(onNext: { locations in
+        print(locations)
+      })
+      .disposed(by: bag)
+
     let searchInput = searchCityName.rx
       .controlEvent(.editingDidEndOnExit)
       .map { self.searchCityName.text ?? "" }
