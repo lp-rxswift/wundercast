@@ -52,13 +52,15 @@ class ViewController: UIViewController {
     super.viewDidLoad()
     style()
 
-    geoLocationButton.rx.tap
-      .subscribe(onNext: { [weak self] _ in
-        guard let self = self else { return }
-        self.locationManager.requestWhenInUseAuthorization()
-        self.locationManager.startUpdatingLocation()
-      })
-      .disposed(by: bag)
+    let geoSearch = geoLocationButton.rx.tap
+      .flatMapLatest { _ in
+        self.locationManager.rx.getCurrentLocation()
+      }
+      .flatMapLatest { location in
+        ApiController.shared
+          .currentWeather(at: location.coordinate)
+          .catchErrorJustReturn(.empty)
+      }
 
     locationManager.rx.didUpdateLocations
       .subscribe(onNext: { locations in
@@ -73,14 +75,14 @@ class ViewController: UIViewController {
 
     let temperature = tempSwitch.rx.controlEvent(.valueChanged).asObservable()
 
-    let textSearch = searchCityName.rx.controlEvent(.editingDidEndOnExit).asObservable()
+    let textSearch = searchInput.flatMap { city in
+      ApiController.shared
+        .currentWeather(for: city)
+        .catchErrorJustReturn(.empty)
+    }
 
-    let search = searchInput
-      .flatMapLatest { text in
-        ApiController.shared
-          .currentWeather(for: text)
-          .catchErrorJustReturn(.empty)
-      }
+    let search = Observable
+      .merge(geoSearch, textSearch)
       .asDriver(onErrorJustReturn: .empty)
 
     let running = Observable

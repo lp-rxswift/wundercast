@@ -33,6 +33,7 @@
 import Foundation
 import RxSwift
 import RxCocoa
+import CoreLocation
 
 class ApiController {
   struct Weather: Decodable {
@@ -107,6 +108,15 @@ class ApiController {
   // MARK: - Api Calls
   func currentWeather(for city: String) -> Observable<Weather> {
     buildRequest(pathComponent: "weather", params: [("q", city)])
+      .map { data in
+        try JSONDecoder().decode(Weather.self, from: data)
+      }
+  }
+
+  func currentWeather(at coordinate: CLLocationCoordinate2D) -> Observable<Weather> {
+    buildRequest(pathComponent: "weather",
+                 params: [("lat", "\(coordinate.latitude)"),
+                          ("lon", "\(coordinate.longitude)")])
       .map { data in
         try JSONDecoder().decode(Weather.self, from: data)
       }
