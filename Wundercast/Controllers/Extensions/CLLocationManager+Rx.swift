@@ -1,11 +1,3 @@
-//
-//  CLLocationManager+Rx.swift
-//  Wundercast
-//
-//  Created by Lucas Pedrazoli on 10/12/20.
-//  Copyright © 2020 Ray Wenderlich. All rights reserved.
-//
-
 import Foundation
 import CoreLocation
 import RxSwift
@@ -13,10 +5,7 @@ import RxCocoa
 
 extension CLLocationManager: HasDelegate {}
 
-class RxCLLocationManagerDelegateProxy:
-  DelegateProxy<CLLocationManager, CLLocationManagerDelegate>,
-  DelegateProxyType,
-  CLLocationManagerDelegate {
+class RxCLLocationManagerDelegateProxy: DelegateProxy<CLLocationManager, CLLocationManagerDelegate>, DelegateProxyType, CLLocationManagerDelegate {
 
   weak public private(set) var locationManager: CLLocationManager?
 
@@ -37,15 +26,14 @@ public extension Reactive where Base: CLLocationManager {
   }
 
   var didUpdateLocations: Observable<[CLLocation]> {
-    delegate.methodInvoked(
-      #selector(CLLocationManagerDelegate.locationManager(_:didUpdateLocations:)))
+    delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didUpdateLocations:)))
       .map { parameters in
         parameters[1] as! [CLLocation]
       }
   }
 
   var authorizationStatus: Observable<CLAuthorizationStatus> {
-  delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didChangeAuthorization:)))
+    delegate.methodInvoked(#selector(CLLocationManagerDelegate.locationManager(_:didChangeAuthorization:)))
       .map { parameters in
         CLAuthorizationStatus(rawValue: parameters[1] as! Int32)!
       }
@@ -55,15 +43,12 @@ public extension Reactive where Base: CLLocationManager {
   func getCurrentLocation() -> Observable<CLLocation> {
     let location = authorizationStatus
       .filter { $0 == .authorizedWhenInUse || $0 == .authorizedAlways }
-      .flatMap { _ in
-        self.didUpdateLocations.compactMap(\.first) }
+      .flatMap { _ in self.didUpdateLocations.compactMap(\.first) }
       .take(1)
       .do(onDispose: { [weak base] in base?.stopUpdatingLocation() })
-      base.requestWhenInUseAuthorization()
-      base.startUpdatingLocation()
 
-      return location
+    base.requestWhenInUseAuthorization()
+    base.startUpdatingLocation()
+    return location
   }
 }
-
-

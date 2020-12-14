@@ -86,8 +86,10 @@ class ViewController: UIViewController {
       .asDriver(onErrorJustReturn: .empty)
 
     let running = Observable
-      .merge(search.map { _ in false }.asObservable(),
-             searchInput.map { _ in true })
+      .merge(
+        geoLocationButton.rx.tap.map { _ in true },
+        search.map { _ in false }.asObservable(),
+        searchInput.map { _ in true })
       .startWith(true)
       .asDriver(onErrorJustReturn: false)
 
