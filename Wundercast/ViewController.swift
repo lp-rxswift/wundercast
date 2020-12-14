@@ -16,8 +16,11 @@ class ViewController: UIViewController {
   @IBOutlet private var mapButton: UIButton!
   @IBOutlet private var mapView: MKMapView!
 
+  typealias Weather = ApiController.Weather
+
   private let bag = DisposeBag()
   private let locationManager = CLLocationManager()
+  private var cache = [String: Weather]()
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -57,10 +60,15 @@ class ViewController: UIViewController {
       .map { self.searchCityName.text ?? "" }
       .filter { !$0.isEmpty }
 
-    let textSearch = searchInput.flatMap { city in
-      ApiController.shared
-        .currentWeather(for: city)
-        .catchErrorJustReturn(.empty)
+    let textSearch = searchInput.flatMap { text in
+      return ApiController.shared
+        .currentWeather(for: text)
+        .do(onNext: { [weak self] data in
+          self?.cache[text] = data
+        })
+        .catchError { error in
+          return Observable.just(self.cache[text] ?? .empty)
+        }
     }
 
     let search = Observable
