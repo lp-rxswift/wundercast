@@ -34,6 +34,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 import CoreLocation
+import MapKit
 
 class ViewController: UIViewController {
   @IBOutlet private var searchCityName: UITextField!
@@ -44,6 +45,8 @@ class ViewController: UIViewController {
   @IBOutlet private var tempSwitch: UISwitch!
   @IBOutlet private var activityIndicator: UIActivityIndicatorView!
   @IBOutlet private var geoLocationButton: UIButton!
+  @IBOutlet private var mapButton: UIButton!
+  @IBOutlet private var mapView: MKMapView!
 
   private let bag = DisposeBag()
   private let locationManager = CLLocationManager()
@@ -51,6 +54,12 @@ class ViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     style()
+
+    mapButton.rx.tap
+      .subscribe(onNext: {
+        self.mapView.isHidden.toggle()
+      })
+      .disposed(by: bag)
 
     let geoSearch = geoLocationButton.rx.tap
       .flatMapLatest { _ in
