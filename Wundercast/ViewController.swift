@@ -55,6 +55,10 @@ class ViewController: UIViewController {
     super.viewDidLoad()
     style()
 
+    mapView.rx
+     .setDelegate(self)
+     .disposed(by: bag)
+
     mapButton.rx.tap
       .subscribe(onNext: {
         self.mapView.isHidden.toggle()
@@ -174,5 +178,14 @@ class ViewController: UIViewController {
     humidityLabel.textColor = UIColor.cream
     iconLabel.textColor = UIColor.cream
     cityNameLabel.textColor = UIColor.cream
+  }
+}
+
+extension ViewController: MKMapViewDelegate {
+  func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+    guard let overlay = overlay as? ApiController.Weather.Overlay else {
+      return MKOverlayRenderer()
+    }
+    return ApiController.Weather.OverlayView(overlay: overlay, overlayIcon: overlay.icon)
   }
 }
