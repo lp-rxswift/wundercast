@@ -166,6 +166,8 @@ class ViewController: UIViewController {
       InfoView.showIn(viewController: self, message: "City name was not found")
     case .serverFailure:
       InfoView.showIn(viewController: self, message: "Server error")
+    case .invalidKey:
+      InfoView.showIn(viewController: self, message: "Key is invalid")
     }
   }
 

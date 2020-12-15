@@ -7,6 +7,7 @@ import MapKit
 enum ApiError: Error {
   case cityNotFound
   case serverFailure
+  case invalidKey
 }
 
 class ApiController {
@@ -144,6 +145,8 @@ class ApiController {
         switch response.statusCode {
         case 200 ..< 300:
           return data
+        case 401:
+          return ApiError.invalidKey
         case 400 ..< 500:
           throw ApiError.cityNotFound
         default:
