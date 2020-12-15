@@ -156,6 +156,19 @@ class ViewController: UIViewController {
     // Dispose of any resources that can be recreated.
   }
 
+  private func showError(error e: Error) {
+    guard let e = e as? ApiError else {
+      InfoView.showIn(viewController: self, message: "An Error has ocurred")
+      return
+    }
+    switch e {
+    case .cityNotFound:
+      InfoView.showIn(viewController: self, message: "City name was not found")
+    case .serverFailure:
+      InfoView.showIn(viewController: self, message: "Server error")
+    }
+  }
+
   // MARK: - Style
 
   private func style() {
