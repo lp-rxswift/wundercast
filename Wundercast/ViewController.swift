@@ -15,6 +15,7 @@ class ViewController: UIViewController {
   @IBOutlet private var geoLocationButton: UIButton!
   @IBOutlet private var mapButton: UIButton!
   @IBOutlet private var mapView: MKMapView!
+  @IBOutlet weak var keyButton: UIButton!
   var keyTextField: UITextField?
 
   typealias Weather = ApiController.Weather
@@ -27,6 +28,12 @@ class ViewController: UIViewController {
     super.viewDidLoad()
     let maxAttempts = 4
     style()
+
+    keyButton.rx.tap
+      .subscribe(onNext: { [weak self] _ in
+        self?.requestKey()
+      })
+      .disposed(by:bag)
 
     mapView.rx
      .setDelegate(self)
