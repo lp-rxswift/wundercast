@@ -15,6 +15,7 @@ class ViewController: UIViewController {
   @IBOutlet private var geoLocationButton: UIButton!
   @IBOutlet private var mapButton: UIButton!
   @IBOutlet private var mapView: MKMapView!
+  var keyTextField: UITextField?
 
   typealias Weather = ApiController.Weather
 
@@ -56,10 +57,27 @@ class ViewController: UIViewController {
           .catchErrorJustReturn(.empty)
     }
 
+    let retryHandler: (Observable<Error>) -> Observable<Int> = { e in
+      return e.enumerated().flatMap { attempt, error -> Observable<Int> in
+        if attempt >= maxAttempts - 1 {
+          return Observable.error(error)
+        } else if let casted = error as? ApiError, casted == .invalidKey {
+          return ApiController.shared.apiKey
+            .filter { !$0.isEmpty }
+            .map { _ in 1 }
+        }
+        print("== retrying after \(attempt + 1) seconds ==")
+        return Observable<Int>.timer(.seconds(attempt + 1),
+                                     scheduler: MainScheduler.instance)
+                              .take(1)
+      }
+    }
+
     let searchInput = searchCityName.rx
       .controlEvent(.editingDidEndOnExit)
       .map { self.searchCityName.text ?? "" }
       .filter { !$0.isEmpty }
+      .retryWhen(retryHandler)
 
     let textSearch = searchInput.flatMap { text in
       return ApiController.shared
@@ -154,6 +172,26 @@ class ViewController: UIViewController {
   override func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     // Dispose of any resources that can be recreated.
+  }
+
+  func requestKey() {
+    func configurationTextField(textField: UITextField!) {
+      self.keyTextField = textField
+    }
+
+    let alert = UIAlertController(title: "Api Key",
+                                  message: "Add the api key:",
+                                  preferredStyle: UIAlertController.Style.alert)
+
+    alert.addTextField(configurationHandler: configurationTextField)
+
+    alert.addAction(UIAlertAction(title: "Ok", style: .default) { [weak self] _ in
+      ApiController.shared.apiKey.onNext(self?.keyTextField?.text ?? "")
+    })
+
+    alert.addAction(UIAlertAction(title: "Cancel", style: UIAlertAction.Style.destructive))
+
+    self.present(alert, animated: true)
   }
 
   private func showError(error e: Error) {

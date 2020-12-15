@@ -146,7 +146,7 @@ class ApiController {
         case 200 ..< 300:
           return data
         case 401:
-          return ApiError.invalidKey
+          throw ApiError.invalidKey
         case 400 ..< 500:
           throw ApiError.cityNotFound
         default:
