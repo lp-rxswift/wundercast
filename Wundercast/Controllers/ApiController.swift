@@ -4,6 +4,11 @@ import RxCocoa
 import CoreLocation
 import MapKit
 
+enum ApiError: Error {
+  case cityNotFound
+  case serverFailure
+}
+
 class ApiController {
   struct Weather: Decodable {
     let cityName: String
@@ -134,7 +139,17 @@ class ApiController {
 
     let session = URLSession.shared
 
-    return session.rx.data(request: request)
+    return session.rx.response(request: request)
+      .map { response, data in
+        switch response.statusCode {
+        case 200 ..< 300:
+          return data
+        case 400 ..< 500:
+          throw ApiError.cityNotFound
+        default:
+          throw ApiError.serverFailure
+        }
+      }
   }
 
 }
