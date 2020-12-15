@@ -69,7 +69,7 @@ class ViewController: UIViewController {
         }, onError: { error in
           DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            InfoView.showIn(viewController: self, message: "An error ocurred")
+            self.showError(error: error)
           }
         })
         .catchError { error in
