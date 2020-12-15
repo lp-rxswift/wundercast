@@ -66,18 +66,12 @@ class ViewController: UIViewController {
         .currentWeather(for: text)
         .do(onNext: { [weak self] data in
           self?.cache[text] = data
-        })
-        .retryWhen { e in
-          return e.enumerated().flatMap { attempt, error -> Observable<Int> in
-            if attempt >= maxAttempts - 1 {
-              return Observable.error(error)
-            }
-            print("== retrying after \(attempt + 1) seconds ==")
-            return Observable<Int>.timer(.seconds(attempt + 1),
-                                         scheduler: MainScheduler.instance)
-              .take(1)
+        }, onError: { error in
+          DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            InfoView.showIn(viewController: self, message: "An error ocurred")
           }
-        }
+        })
         .catchError { error in
           return Observable.just(self.cache[text] ?? .empty)
         }
